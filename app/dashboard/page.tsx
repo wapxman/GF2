@@ -171,7 +171,7 @@ export default function Dashboard() {
             icon={<Shield className="w-5 h-5" />}
             label="Администрирование"
             active={activeSection === 'admin'}
-            onClick={() => setActiveSection('admin')}
+            onClick={() => window.location.href = '/admin/users'}
             visible={canAccessAdmin}
           />
           <SidebarItem

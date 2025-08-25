@@ -4,7 +4,7 @@ import { supabaseAdmin } from '@/lib/supabase-admin'
 
 export async function GET(request: NextRequest) {
   try {
-    const tokenUser = getUserFromRequest(request)
+    const tokenUser = await getUserFromRequest(request)
     
     if (!tokenUser) {
       return NextResponse.json(

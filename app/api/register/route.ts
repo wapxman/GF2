@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const token = generateToken(newUser)
+    const token = await generateToken(newUser)
     const response = NextResponse.json({ 
       success: true,
       user: {

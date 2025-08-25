@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
 
     loginAttempts.delete(rateLimitKey)
 
-    const token = generateToken(user)
+    const token = await generateToken(user)
     const response = NextResponse.json({
       success: true,
       user: {

@@ -57,9 +57,12 @@ export default function Login() {
         return
       }
 
-      router.push('/dashboard')
+      setTimeout(() => {
+        window.location.href = '/dashboard'
+      }, 100)
     } catch (error) {
       setError('Произошла ошибка при входе')
+    } finally {
       setLoading(false)
     }
   }

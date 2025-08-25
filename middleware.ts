@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getUserFromRequest } from '@/lib/auth'
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   if (pathname.startsWith('/dashboard') || pathname.startsWith('/admin')) {
-    const user = getUserFromRequest(request)
+    const user = await getUserFromRequest(request)
     
     if (!user) {
+      console.log('Middleware: No user found for protected route:', pathname)
       return NextResponse.redirect(new URL('/login', request.url))
     }
 
@@ -17,10 +18,13 @@ export function middleware(request: NextRequest) {
   }
 
   if (pathname === '/login' || pathname === '/register') {
-    const user = getUserFromRequest(request)
+    const user = await getUserFromRequest(request)
     
     if (user) {
+      console.log('Middleware: User found on auth page, redirecting to dashboard:', user.login)
       return NextResponse.redirect(new URL('/dashboard', request.url))
+    } else {
+      console.log('Middleware: No user found on auth page:', pathname)
     }
   }
 

@@ -3,8 +3,6 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
-import bcrypt from 'bcryptjs'
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -21,35 +19,25 @@ export default function Login() {
     setError('')
 
     try {
-      const { data: user, error: fetchError } = await supabase
-        .from('users')
-        .select('*')
-        .eq('login', formData.login)
-        .single()
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
 
-      if (fetchError || !user) {
-        setError('Неверный логин или пароль')
+      const data = await response.json()
+
+      if (!response.ok) {
+        setError(data.error || 'Произошла ошибка при входе')
         setLoading(false)
         return
       }
 
-      const isPasswordValid = await bcrypt.compare(formData.password, user.password)
-
-      if (!isPasswordValid) {
-        setError('Неверный логин или пароль')
-        setLoading(false)
-        return
-      }
-
-      localStorage.setItem('user', JSON.stringify({
-        id: user.id,
-        login: user.login,
-        first_name: user.first_name,
-        last_name: user.last_name
-      }))
-
+      localStorage.setItem('user', JSON.stringify(data.user))
       router.push('/dashboard')
-    } catch (err) {
+    } catch (error) {
       setError('Произошла ошибка при входе')
       setLoading(false)
     }

@@ -3,8 +3,6 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
-import bcrypt from 'bcryptjs'
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -23,41 +21,27 @@ export default function Register() {
     setError('')
 
     try {
-      const { data: existingUser } = await supabase
-        .from('users')
-        .select('login')
-        .eq('login', formData.login)
-        .single()
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
 
-      if (existingUser) {
-        setError('Пользователь с таким логином уже существует')
+      const data = await response.json()
+
+      if (!response.ok) {
+        setError(data.error || 'Произошла ошибка при регистрации')
         setLoading(false)
         return
       }
 
-      const hashedPassword = await bcrypt.hash(formData.password, 10)
-
-      const { error: insertError } = await supabase
-        .from('users')
-        .insert([
-          {
-            login: formData.login,
-            password: hashedPassword,
-            first_name: formData.first_name,
-            last_name: formData.last_name
-          }
-        ])
-
-      if (insertError) {
-        setError('Ошибка при регистрации: ' + insertError.message)
-      } else {
-        router.push('/login')
-      }
-    } catch (err) {
+      router.push('/login')
+    } catch (error) {
       setError('Произошла ошибка при регистрации')
+      setLoading(false)
     }
-
-    setLoading(false)
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

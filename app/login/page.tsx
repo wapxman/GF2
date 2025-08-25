@@ -1,8 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -11,7 +15,25 @@ export default function Login() {
   })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [checkingAuth, setCheckingAuth] = useState(true)
   const router = useRouter()
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/me')
+        if (response.ok) {
+          router.push('/dashboard')
+          return
+        }
+      } catch (error) {
+      } finally {
+        setCheckingAuth(false)
+      }
+    }
+
+    checkAuth()
+  }, [router])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -35,7 +57,6 @@ export default function Login() {
         return
       }
 
-      localStorage.setItem('user', JSON.stringify(data.user))
       router.push('/dashboard')
     } catch (error) {
       setError('Произошла ошибка при входе')
@@ -50,67 +71,73 @@ export default function Login() {
     })
   }
 
-  return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="apple-card max-w-md w-full mx-4">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Вход</h1>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label htmlFor="login" className="block text-sm font-medium text-gray-700 mb-2">
-              Логин
-            </label>
-            <input
-              type="text"
-              id="login"
-              name="login"
-              value={formData.login}
-              onChange={handleChange}
-              required
-              className="apple-input"
-              placeholder="Введите логин"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-              Пароль
-            </label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              className="apple-input"
-              placeholder="Введите пароль"
-            />
-          </div>
-
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-              {error}
-            </div>
-          )}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="apple-button w-full disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loading ? 'Вход...' : 'Войти'}
-          </button>
-        </form>
-
-        <div className="mt-6 text-center">
-          <Link href="/register" className="text-blue-500 hover:text-blue-600 transition-colors">
-            Нет аккаунта? Зарегистрироваться
-          </Link>
+  if (checkingAuth) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-2 text-gray-600">Загрузка...</p>
         </div>
       </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <Card className="max-w-md w-full mx-4">
+        <CardHeader>
+          <CardTitle className="text-center text-2xl">Вход в систему</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="login">Логин</Label>
+              <Input
+                type="text"
+                id="login"
+                name="login"
+                value={formData.login}
+                onChange={handleChange}
+                required
+                placeholder="Введите логин"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="password">Пароль</Label>
+              <Input
+                type="password"
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                placeholder="Введите пароль"
+              />
+            </div>
+
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                {error}
+              </div>
+            )}
+
+            <Button
+              type="submit"
+              disabled={loading}
+              className="w-full"
+            >
+              {loading ? 'Вход...' : 'Войти'}
+            </Button>
+          </form>
+
+          <div className="mt-6 text-center">
+            <Link href="/register" className="text-blue-600 hover:text-blue-700 transition-colors text-sm">
+              Нет аккаунта? Зарегистрироваться
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }

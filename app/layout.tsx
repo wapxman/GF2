@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Supabase Auth App',
-  description: 'Next.js 14 with Supabase Authentication',
+  title: 'Grand Floor - Управление недвижимостью',
+  description: 'Система управления недвижимостью Grand Floor',
 }
 
 export default function RootLayout({

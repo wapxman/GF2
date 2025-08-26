@@ -147,7 +147,7 @@ export default function Dashboard() {
             icon={<TrendingDown className="w-5 h-5" />}
             label="Расход"
             active={activeSection === 'expenses'}
-            onClick={() => setActiveSection('expenses')}
+            onClick={() => router.push('/expenses')}
           />
           <SidebarItem
             icon={<BarChart3 className="w-5 h-5" />}

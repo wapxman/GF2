@@ -129,7 +129,7 @@ export default function Dashboard() {
             icon={<Building className="w-5 h-5" />}
             label="Недвижимость"
             active={activeSection === 'properties'}
-            onClick={() => setActiveSection('properties')}
+            onClick={() => router.push('/properties')}
           />
           <SidebarItem
             icon={<Users className="w-5 h-5" />}

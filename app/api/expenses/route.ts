@@ -76,7 +76,47 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to fetch expenses' }, { status: 500 })
     }
 
-    const { count } = await query.select('*', { count: 'exact', head: true })
+    let countQuery = supabaseAdmin
+      .from('expenses')
+      .select('*', { count: 'exact', head: true })
+
+    if (user.role === 'owner') {
+      const { data: userProperties } = await supabaseAdmin
+        .from('ownerships')
+        .select('property_id')
+        .eq('user_id', user.id)
+
+      if (userProperties && userProperties.length > 0) {
+        const propertyIds = userProperties.map(p => p.property_id)
+        countQuery = countQuery.in('property_id', propertyIds)
+      }
+    }
+
+    if (owners.length > 0) {
+      const { data: ownerProperties } = await supabaseAdmin
+        .from('ownerships')
+        .select('property_id')
+        .in('user_id', owners)
+
+      if (ownerProperties && ownerProperties.length > 0) {
+        const propertyIds = ownerProperties.map(p => p.property_id)
+        countQuery = countQuery.in('property_id', propertyIds)
+      }
+    }
+
+    if (properties.length > 0) {
+      countQuery = countQuery.in('property_id', properties)
+    }
+
+    if (dateFrom) {
+      countQuery = countQuery.gte('date', dateFrom)
+    }
+
+    if (dateTo) {
+      countQuery = countQuery.lte('date', dateTo)
+    }
+
+    const { count } = await countQuery
 
     return NextResponse.json({
       expenses: expenses || [],

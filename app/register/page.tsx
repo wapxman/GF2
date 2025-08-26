@@ -47,7 +47,12 @@ export default function Register() {
     setError('')
 
     try {
-      const response = await fetch('/api/register', {
+      const baseUrl = window.location.origin
+      const apiUrl = baseUrl.includes('@') 
+        ? `${window.location.protocol}//${window.location.hostname}:${window.location.port}/api/register`
+        : '/api/register'
+      
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -55,17 +60,22 @@ export default function Register() {
         body: JSON.stringify(formData),
       })
 
-      const data = await response.json()
-
       if (!response.ok) {
-        setError(data.error || 'Произошла ошибка при регистрации')
+        try {
+          const data = await response.json()
+          setError(data.error || 'Произошла ошибка при регистрации')
+        } catch (parseError) {
+          setError('Произошла ошибка при регистрации')
+        }
         setLoading(false)
         return
       }
 
+      const data = await response.json()
       router.push('/dashboard')
     } catch (error) {
-      setError('Произошла ошибка при регистрации')
+      console.error('Registration network error:', error)
+      setError('Произошла ошибка соединения. Попробуйте еще раз.')
       setLoading(false)
     }
   }

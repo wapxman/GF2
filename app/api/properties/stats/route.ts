@@ -5,6 +5,8 @@ import { supabaseAdmin } from '@/lib/supabase-admin'
 export const dynamic = 'force-dynamic'
 import { PropertyStats } from '@/types/property'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(request: NextRequest) {
   try {
     const user = await getUserFromRequest(request)

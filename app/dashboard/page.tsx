@@ -31,10 +31,10 @@ function SidebarItem({ icon, label, active = false, onClick, visible = true }: S
   return (
     <button
       onClick={onClick}
-      className={`w-full flex items-center space-x-3 px-4 py-3 text-left rounded-lg transition-colors ${
+      className={`w-full flex items-center space-x-3 px-4 py-3 text-left rounded-lg transition-all duration-200 ${
         active 
-          ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-700' 
-          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+          ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-700 shadow-sm' 
+          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 hover:shadow-sm'
       }`}
     >
       {icon}
@@ -81,6 +81,7 @@ export default function Dashboard() {
 
   const canAccessAdmin = user?.role === 'admin'
   const canManage = user?.role === 'admin' || user?.role === 'manager'
+  const isOwner = user?.role === 'owner'
 
   if (loading) {
     return (
@@ -132,40 +133,46 @@ export default function Dashboard() {
             onClick={() => router.push('/properties')}
           />
           <SidebarItem
-            icon={<Users className="w-5 h-5" />}
-            label="Владельцы"
-            active={activeSection === 'owners'}
-            onClick={() => setActiveSection('owners')}
-          />
-          <SidebarItem
-            icon={<TrendingUp className="w-5 h-5" />}
-            label="Доход"
-            active={activeSection === 'income'}
-            onClick={() => router.push('/income')}
-          />
-          <SidebarItem
-            icon={<TrendingDown className="w-5 h-5" />}
-            label="Расход"
-            active={activeSection === 'expenses'}
-            onClick={() => router.push('/expenses')}
-          />
+  icon={<Users className="w-5 h-5" />}
+  label="Владельцы"
+  active={activeSection === 'owners'}
+  onClick={() => setActiveSection('owners')}
+  visible={canManage}
+/>
+<SidebarItem
+  icon={<TrendingUp className="w-5 h-5" />}
+  label="Доход"
+  active={activeSection === 'income'}
+  onClick={() => router.push('/income')}
+  visible={canManage || isOwner}
+/>
+<SidebarItem
+  icon={<TrendingDown className="w-5 h-5" />}
+  label="Расход"
+  active={activeSection === 'expenses'}
+  onClick={() => router.push('/expenses')}
+  visible={canManage || isOwner}
+/>
+
           <SidebarItem
             icon={<BarChart3 className="w-5 h-5" />}
             label="Финансы"
             active={activeSection === 'finance'}
             onClick={() => setActiveSection('finance')}
+            visible={canManage || isOwner}
           />
           <SidebarItem
             icon={<BarChart3 className="w-5 h-5" />}
             label="Аналитика"
             active={activeSection === 'analytics'}
             onClick={() => setActiveSection('analytics')}
+            visible={canManage || isOwner}
           />
           <SidebarItem
             icon={<Shield className="w-5 h-5" />}
             label="Администрирование"
             active={activeSection === 'admin'}
-            onClick={() => setActiveSection('admin')}
+            onClick={() => window.location.href = '/admin/users'}
             visible={canAccessAdmin}
           />
           <SidebarItem

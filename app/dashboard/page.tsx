@@ -133,26 +133,27 @@ export default function Dashboard() {
             onClick={() => router.push('/properties')}
           />
           <SidebarItem
-            icon={<Users className="w-5 h-5" />}
-            label="Владельцы"
-            active={activeSection === 'owners'}
-            onClick={() => setActiveSection('owners')}
-            visible={canManage}
-          />
-          <SidebarItem
-            icon={<TrendingUp className="w-5 h-5" />}
-            label="Доход"
-            active={activeSection === 'income'}
-            onClick={() => setActiveSection('income')}
-            visible={canManage || isOwner}
-          />
-          <SidebarItem
-            icon={<TrendingDown className="w-5 h-5" />}
-            label="Расход"
-            active={activeSection === 'expenses'}
-            onClick={() => router.push('/expenses')}
-            visible={canManage || isOwner}
-          />
+  icon={<Users className="w-5 h-5" />}
+  label="Владельцы"
+  active={activeSection === 'owners'}
+  onClick={() => setActiveSection('owners')}
+  visible={canManage}
+/>
+<SidebarItem
+  icon={<TrendingUp className="w-5 h-5" />}
+  label="Доход"
+  active={activeSection === 'income'}
+  onClick={() => router.push('/income')}
+  visible={canManage || isOwner}
+/>
+<SidebarItem
+  icon={<TrendingDown className="w-5 h-5" />}
+  label="Расход"
+  active={activeSection === 'expenses'}
+  onClick={() => router.push('/expenses')}
+  visible={canManage || isOwner}
+/>
+
           <SidebarItem
             icon={<BarChart3 className="w-5 h-5" />}
             label="Финансы"

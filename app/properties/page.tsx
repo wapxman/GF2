@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -41,6 +40,7 @@ import {
   BarChart3,
   X
 } from 'lucide-react'
+import DashboardLayout from '@/components/DashboardLayout'
 
 interface UserOption {
   id: string
@@ -74,28 +74,26 @@ export default function PropertiesPage() {
   const [ownerships, setOwnerships] = useState<OwnershipForm[]>([])
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
-  const router = useRouter()
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const response = await fetch('/api/me')
         if (!response.ok) {
-          router.push('/login')
           return
         }
         
         const data = await response.json()
         setUser(data.user)
       } catch (error) {
-        router.push('/login')
+        console.error('Error fetching user:', error)
       } finally {
         setLoading(false)
       }
     }
 
     fetchUser()
-  }, [router])
+  }, [])
 
   useEffect(() => {
     if (user) {
@@ -340,20 +338,15 @@ export default function PropertiesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Недвижимость</h1>
-            <p className="text-gray-600 mt-1">Управление объектами недвижимости</p>
-          </div>
-          <div className="flex space-x-4">
-            <Button
-              variant="outline"
-              onClick={() => router.push('/dashboard')}
-            >
-              ← Назад к дашборду
-            </Button>
+    <DashboardLayout activeSection="properties">
+      <div className="p-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex justify-between items-center mb-6">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Недвижимость</h1>
+              <p className="text-gray-600 mt-1">Управление объектами недвижимости</p>
+            </div>
+            <div className="flex space-x-4"></div>
             {canManage && (
               <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
                 <DialogTrigger asChild>
@@ -760,6 +753,6 @@ export default function PropertiesPage() {
           </DialogContent>
         </Dialog>
       </div>
-    </div>
+    </DashboardLayout>
   )
 }

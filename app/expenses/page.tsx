@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -21,6 +20,7 @@ import {
   Building,
   Users
 } from 'lucide-react'
+import DashboardLayout from '@/components/DashboardLayout'
 
 export default function ExpensesPage() {
   const [user, setUser] = useState<User | null>(null)
@@ -51,28 +51,25 @@ export default function ExpensesPage() {
   })
   const [isAddingNew, setIsAddingNew] = useState(false)
 
-  const router = useRouter()
-
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const response = await fetch('/api/me')
         if (!response.ok) {
-          router.push('/login')
           return
         }
         
         const data = await response.json()
         setUser(data.user)
       } catch (error) {
-        router.push('/login')
+        console.error('Error fetching user:', error)
       } finally {
         setLoading(false)
       }
     }
 
     fetchUser()
-  }, [router])
+  }, [])
 
   useEffect(() => {
     if (user) {
@@ -246,20 +243,15 @@ export default function ExpensesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Расходы</h1>
-            <p className="text-gray-600 mt-1">Управление расходами недвижимости</p>
+    <DashboardLayout activeSection="expenses">
+      <div className="p-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Расходы</h1>
+              <p className="text-gray-600 mt-1">Управление расходами недвижимости</p>
+            </div>
           </div>
-          <Button 
-            onClick={() => router.push('/dashboard')}
-            variant="outline"
-          >
-            Назад к дашборду
-          </Button>
-        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <Card>
@@ -501,7 +493,8 @@ export default function ExpensesPage() {
             </Table>
           </CardContent>
         </Card>
+        </div>
       </div>
-    </div>
+    </DashboardLayout>
   )
 }

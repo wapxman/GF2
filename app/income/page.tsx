@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useEffect, useState, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -10,7 +9,8 @@ import { Label } from '@/components/ui/label'
 import { User } from '@/types/auth'
 import { Property } from '@/types/property'
 import { Income, IncomeStats } from '@/types/income'
-import { ArrowLeft, DollarSign, TrendingUp, Calendar, Building } from 'lucide-react'
+import { DollarSign, TrendingUp, Calendar, Building } from 'lucide-react'
+import DashboardLayout from '@/components/DashboardLayout'
 
 const MONTHS = [
   'Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн',
@@ -42,22 +42,20 @@ export default function IncomePage() {
   })
   const [incomeMatrix, setIncomeMatrix] = useState<IncomeMatrix>({})
   const [pendingUpdates, setPendingUpdates] = useState<{[key: string]: number}>({})
-  const router = useRouter()
 
   const fetchUser = useCallback(async () => {
     try {
       const response = await fetch('/api/me')
       if (!response.ok) {
-        router.push('/login')
         return
       }
       
       const data = await response.json()
       setUser(data.user)
     } catch (error) {
-      router.push('/login')
+      console.error('Error fetching user:', error)
     }
-  }, [router])
+  }, [])
 
   const fetchData = useCallback(async () => {
     if (!user) return
@@ -206,24 +204,15 @@ export default function IncomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <Button
-              variant="ghost"
-              onClick={() => router.push('/dashboard')}
-              className="flex items-center space-x-2"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span>Назад к дашборду</span>
-            </Button>
+    <DashboardLayout activeSection="income">
+      <div className="p-6">
+        <div className="max-w-7xl mx-auto space-y-6">
+          <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">Доход</h1>
               <p className="text-gray-600">Управление доходами недвижимости</p>
             </div>
           </div>
-        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card>
@@ -452,7 +441,8 @@ export default function IncomePage() {
             </div>
           </CardContent>
         </Card>
+        </div>
       </div>
-    </div>
+    </DashboardLayout>
   )
 }

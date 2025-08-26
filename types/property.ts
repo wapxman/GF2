@@ -160,6 +160,21 @@ export interface FinancialSummary {
   expected_income: number
   actual_income: number
   actual_expenses: number
-  net_profit: number
+  delta: number
   plan_percentage: number
+}
+
+export interface FinanceStats {
+  total_expected: number
+  total_actual_income: number
+  total_expenses: number
+  total_delta: number
+  overall_plan_percentage: number
+}
+
+export interface FinanceFilters {
+  year: number
+  months?: number[]
+  owners?: string[]
+  properties?: string[]
 }
